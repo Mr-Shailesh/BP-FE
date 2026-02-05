@@ -5,6 +5,7 @@ import { PublicRoute } from "./components/PublicRoute";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
+import BooksPage from "./pages/BooksPage";
 import ErrorPage from "./pages/ErrorPage";
 import { useAppDispatch } from "./store/hooks";
 import { checkAuthStatus } from "./store/slices/authSlice";
@@ -43,6 +44,14 @@ const App: React.FC = () => {
           element={
             <ProtectedRoute>
               <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/books"
+          element={
+            <ProtectedRoute>
+              <BooksPage />
             </ProtectedRoute>
           }
         />
