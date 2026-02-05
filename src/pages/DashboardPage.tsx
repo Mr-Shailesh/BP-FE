@@ -46,6 +46,12 @@ export default function DashboardPage() {
                 >
                   Books
                 </Link>
+                <Link
+                  to="/upload"
+                  className="text-sm font-semibold text-slate-500 hover:text-primary-600 transition-colors"
+                >
+                  Media
+                </Link>
               </div>
             </div>
 
@@ -146,6 +152,13 @@ export default function DashboardPage() {
                 title="Books CRUD"
                 description="Manage your library with full Create, Read, Update, and Delete support."
                 icon="📚"
+              />
+            </div>
+            <div onClick={() => navigate("/upload")} className="cursor-pointer">
+              <FeatureCard
+                title="Media Upload"
+                description="Fast and secure multi-image uploads with instant local previews."
+                icon="🖼️"
               />
             </div>
           </div>

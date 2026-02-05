@@ -8,6 +8,7 @@ import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
 import BooksPage from "./pages/BooksPage";
 import ErrorPage from "./pages/ErrorPage";
+import UploadPage from "./pages/UploadPage";
 import { useAppDispatch } from "./store/hooks";
 import { checkAuthStatus } from "./store/slices/authSlice";
 
@@ -54,6 +55,14 @@ const App: React.FC = () => {
           element={
             <ProtectedRoute>
               <BooksPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/upload"
+          element={
+            <ProtectedRoute>
+              <UploadPage />
             </ProtectedRoute>
           }
         />
