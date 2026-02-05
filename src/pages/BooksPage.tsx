@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
   fetchBooks,
@@ -11,8 +12,10 @@ import { Book, CreateBookDto } from "../types/book";
 
 const BooksPage: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { books, loading, error } = useAppSelector((state) => state.books);
+  const { books, loading, error } = useAppSelector((state: any) => state.books);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [bookToDelete, setBookToDelete] = useState<Book | null>(null);
   const [editingBook, setEditingBook] = useState<Book | null>(null);
   const [formData, setFormData] = useState<CreateBookDto>({
     title: "",
@@ -30,7 +33,7 @@ const BooksPage: React.FC = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev: any) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -40,12 +43,14 @@ const BooksPage: React.FC = () => {
         await dispatch(
           updateExistingBook({ id: editingBook._id, data: formData }),
         ).unwrap();
+        toast.success("Book updated successfully!");
       } else {
         await dispatch(addBook(formData)).unwrap();
+        toast.success("Book added to collection!");
       }
       closeModal();
-    } catch (err) {
-      // Error is caught by Redux state, we just prevent closeModal()
+    } catch (err: any) {
+      toast.error(err || "Failed to save book.");
       console.error("Submission failed:", err);
     }
   };
@@ -79,9 +84,21 @@ const BooksPage: React.FC = () => {
     dispatch(clearError());
   };
 
-  const handleDelete = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this book?")) {
-      await dispatch(deleteBook(id));
+  const handleDelete = (book: Book) => {
+    setBookToDelete(book);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (bookToDelete) {
+      try {
+        await dispatch(deleteBook(bookToDelete._id)).unwrap();
+        toast.success("Book deleted successfully.");
+        setIsDeleteModalOpen(false);
+        setBookToDelete(null);
+      } catch (err: any) {
+        toast.error(err || "Failed to delete book.");
+      }
     }
   };
 
@@ -159,7 +176,7 @@ const BooksPage: React.FC = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {books &&
-              books.map((book) => (
+              books.map((book: Book) => (
                 <div
                   key={book._id}
                   className="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md transition-all group flex flex-col"
@@ -211,7 +228,7 @@ const BooksPage: React.FC = () => {
                       Edit
                     </button>
                     <button
-                      onClick={() => handleDelete(book._id)}
+                      onClick={() => handleDelete(book)}
                       className="flex-1 px-4 py-2 bg-white text-red-600 rounded-lg text-sm font-bold hover:bg-red-50 transition-colors border border-red-100"
                     >
                       Delete
@@ -402,6 +419,57 @@ const BooksPage: React.FC = () => {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Delete Confirmation Modal */}
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+            onClick={() => setIsDeleteModalOpen(false)}
+          ></div>
+          <div className="relative bg-white w-full max-w-md rounded-[2rem] shadow-2xl overflow-hidden animate-scale-in p-8 text-center">
+            <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg
+                className="w-10 h-10 text-red-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                />
+              </svg>
+            </div>
+            <h3 className="text-2xl font-bold text-slate-900 mb-2">
+              Delete Book
+            </h3>
+            <p className="text-slate-500 mb-8">
+              Are you sure you want to delete{" "}
+              <span className="font-bold text-slate-700">
+                "{bookToDelete?.title}"
+              </span>
+              ? This action cannot be undone.
+            </p>
+            <div className="flex gap-4">
+              <button
+                onClick={() => setIsDeleteModalOpen(false)}
+                className="flex-1 px-6 py-3 border border-slate-200 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                disabled={loading}
+                className="flex-1 bg-red-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg shadow-red-100 transition-all hover:bg-red-700 hover:scale-105 disabled:opacity-50"
+              >
+                {loading ? "Deleting..." : "Delete Book"}
+              </button>
             </div>
           </div>
         </div>

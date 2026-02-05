@@ -1,5 +1,5 @@
-import React from "react";
 import { useNavigate, Link } from "react-router-dom";
+import toast from "react-hot-toast";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { loginUser } from "../store/slices/authSlice";
 import { AuthForm } from "../components/AuthForm";
@@ -7,16 +7,17 @@ import { AuthForm } from "../components/AuthForm";
 export default function LoginPage() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { loading, error } = useAppSelector((state) => state.auth);
+  const { loading, error } = useAppSelector((state: any) => state.auth);
 
   const handleLogin = async (formData: Record<string, string>) => {
     try {
       await dispatch(
         loginUser({ email: formData.email, password: formData.password }),
       ).unwrap();
+      toast.success("Welcome back! Login successful.");
       navigate("/dashboard");
-    } catch (err) {
-      // Error handled by redux state
+    } catch (err: any) {
+      toast.error(err || "Login failed. Please check your credentials.");
     }
   };
 

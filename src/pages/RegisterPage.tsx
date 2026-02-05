@@ -1,5 +1,5 @@
-import React from "react";
 import { useNavigate, Link } from "react-router-dom";
+import toast from "react-hot-toast";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { registerUser } from "../store/slices/authSlice";
 import { AuthForm } from "../components/AuthForm";
@@ -7,7 +7,7 @@ import { AuthForm } from "../components/AuthForm";
 export default function RegisterPage() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { loading, error } = useAppSelector((state) => state.auth);
+  const { loading, error } = useAppSelector((state: any) => state.auth);
 
   const handleRegister = async (formData: Record<string, string>) => {
     try {
@@ -20,9 +20,10 @@ export default function RegisterPage() {
           passwordConfirm: formData.passwordConfirm,
         }),
       ).unwrap();
+      toast.success("Account created successfully!");
       navigate("/dashboard");
-    } catch (err) {
-      // Error handled by redux state
+    } catch (err: any) {
+      toast.error(err || "Registration failed. Please try again.");
     }
   };
 

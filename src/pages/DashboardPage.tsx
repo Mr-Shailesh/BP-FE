@@ -1,7 +1,7 @@
-import React from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { logoutUser } from "../store/slices/authSlice";
+import toast from "react-hot-toast";
 
 export default function DashboardPage() {
   const navigate = useNavigate();
@@ -10,6 +10,7 @@ export default function DashboardPage() {
 
   const handleLogout = () => {
     dispatch(logoutUser());
+    toast.success("Logged out successfully. See you soon!");
     navigate("/login");
   };
 
